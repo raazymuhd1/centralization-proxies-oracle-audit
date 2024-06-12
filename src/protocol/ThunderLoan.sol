@@ -145,15 +145,22 @@ contract ThunderLoan is Initializable, OwnableUpgradeable, UUPSUpgradeable, Orac
         s_flashLoanFee = 3e15; // 0.3% ETH fee
     }
 
+    // @audit-info where is the natspec??
     function deposit(IERC20 token, uint256 amount) external revertIfZero(amount) revertIfNotAllowedToken(token) {
-        AssetToken assetToken = s_tokenToAssetToken[token];
+        AssetToken assetToken = s_tokenToAssetToken[token]; // e: represents the shares of the pool
         uint256 exchangeRate = assetToken.getExchangeRate();
+        // e: 100e18 USDC * 1e18 / 2e18 = 50e18;
+        // e: this 
         uint256 mintAmount = (amount * assetToken.EXCHANGE_RATE_PRECISION()) / exchangeRate;
         emit Deposit(msg.sender, token, amount);
         assetToken.mint(msg.sender, mintAmount);
+        // q: why are we calculating the fees of flashloans in the deposit??
+        // @audit follow up, this seems sus
         uint256 calculatedFee = getCalculatedFee(token, amount);
          // @follow-up external call
+        //  q: why are we updating the exchange rate?
         assetToken.updateExchangeRate(calculatedFee);
+        // e: when a liquidity provider deposits, the $ sits in the assetToken contract
         token.safeTransferFrom(msg.sender, address(assetToken), amount);
     }
 

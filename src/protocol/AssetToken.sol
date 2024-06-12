@@ -21,6 +21,8 @@ contract AssetToken is ERC20 {
     // The underlying per asset exchange rate
     // ie: s_exchangeRate = 2
     // means 1 asset token is worth 2 underlying tokens
+    // e: underlying == USDC/USDT
+    // e: assetToken == shares in token
     uint256 private s_exchangeRate;
     uint256 public constant EXCHANGE_RATE_PRECISION = 1e18;
     uint256 private constant STARTING_EXCHANGE_RATE = 1e18;
@@ -73,6 +75,10 @@ contract AssetToken is ERC20 {
         _burn(account, amount);
     }
 
+    // weird erc20?
+    // q: what happens if USDC blacklists the thunderloan contract?
+    // q: what happens if USDC blacklists the assetToken contract?
+    // @follow up, weird ERC20s with USDC
     function transferUnderlyingTo(address to, uint256 amount) external onlyThunderLoan {
         i_underlying.safeTransfer(to, amount);
     }
@@ -86,6 +92,8 @@ contract AssetToken is ERC20 {
         // newExchangeRate = oldExchangeRate * (totalSupply + fee) / totalSupply
         // newExchangeRate = 1 (4 + 0.5) / 4
         // newExchangeRate = 1.125
+        // q: what if the totalSupply is 0??
+        // @audit-gas, too many storage reads => it's better to store in memory variable to safe gas.
         uint256 newExchangeRate = s_exchangeRate * (totalSupply() + fee) / totalSupply();
 
         if (newExchangeRate <= s_exchangeRate) {

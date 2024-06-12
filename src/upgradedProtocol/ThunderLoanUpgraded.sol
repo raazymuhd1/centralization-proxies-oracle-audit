@@ -137,6 +137,12 @@ contract ThunderLoanUpgraded is Initializable, OwnableUpgradeable, UUPSUpgradeab
     /*//////////////////////////////////////////////////////////////
                            EXTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
+    // @audit-info change name to poolFactoryAddress
+    // q: what happens if we deploy the contract, and someone else initializes it ?
+    // a: that would suck!
+    // they could pick a different tswapAddress
+    // @audit-low - initializers can be frontrun
+    // if we forgot to initialize at the first time we deploy, later on we could overwrite everything when we try to initializes it.
     function initialize(address tswapAddress) external initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();

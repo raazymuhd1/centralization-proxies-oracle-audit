@@ -1,4 +1,4 @@
-# Video Stop at 14.50.21
+# Video Stop at 15.59.42
 
 ## What is arbitrage
  - `Arbitrage` - the simultaneous buying and selling of securities, currency, or commodities in different markets or in derivative forms in order to take advantage of differing prices for the same asset.
